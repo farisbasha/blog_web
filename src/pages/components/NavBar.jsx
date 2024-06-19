@@ -2,6 +2,9 @@ import { Button } from '@nextui-org/button'
 import { Input } from '@nextui-org/input';
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter} from "@nextui-org/modal";
 import { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { createBlog, getBlogs } from '../../redux/slices/blogSlice';
+import { toast } from 'sonner';
 
 
 
@@ -9,6 +12,7 @@ import { useState } from 'react';
 const NavBar = () => {
 
   const [isOpen, onOpenChange] = useState(false)
+  const dispatch = useDispatch()
 
   return (
 
@@ -23,17 +27,41 @@ const NavBar = () => {
             <>
               <ModalHeader className="flex flex-col gap-1">Add Blog</ModalHeader>
               <ModalBody>
-                <Input label="Title" bordered />
-                <Input label="Description" bordered />
-                <Input label="Author" bordered />
+                <form id='add-blog' className='flex flex-col gap-2'
+                onSubmit={async (e)=>{
+                  e.preventDefault();
+                  const title = e.target.title.value
+                  const description = e.target.description.value
+                  const author = e.target.author.value
+                  
+                  onOpenChange(false)
+                  
+                  try {
+                    await dispatch(createBlog({
+                      title:title,
+                      description:description,
+                      author:author
+                    })).unwrap()
+                    await dispatch(getBlogs())
+  
+                    toast.success('Blog added successfully')
+                  } catch (error) {
+                    toast.error(error.message)
+                  }
+                }}
+                 >
+                  <Input label="Title" bordered name="title" />
+                  <Input label="Description" bordered name="description" />
+                  <Input label="Author" bordered name="author" />
+                </form>
 
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="light" onPress={onClose}>
                   Close
                 </Button>
-                <Button color="primary" onPress={onClose}>
-                  Action
+                <Button color="primary" type='submit' form='add-blog'>
+                 Add Blog
                 </Button>
               </ModalFooter>
             </>

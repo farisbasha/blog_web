@@ -15,8 +15,8 @@ const BlogPage = () => {
     return <h1>Loading</h1>
   }
 
-  if(blogState.isError){
-    return <h1>{blogState.errorMessage}</h1>
+  if(blogState.error){
+    return <h1>{blogState.error?.message ?? "Something went wrong"}</h1>
   }
 
   return (
